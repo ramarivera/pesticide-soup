@@ -2,7 +2,7 @@ from gibd.web_scrapping.site_managers.greenpeace_manager import GreenpeaceManage
 
 
 
-filtro = 'http://www.greenpeace.org/argentina/es/noticias/1-millon-de-firmas-para-causas-ambientales-//'
+filtro = 'http://www.greenpeace.org/argentina/es/noticias/1-millon-de-firmas-para-causas-ambientales-/'
 base = u"http://www.greenpeace.org"
 path = base + u"/argentina/es"
 sopas = {}
