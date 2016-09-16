@@ -2,7 +2,7 @@ from urllib.request import Request, urlopen
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 
-from gibd.web_scrapping.model.site import Site
+from web_scrapping.model.site import Site
 
 
 class BaseManager(ABC):

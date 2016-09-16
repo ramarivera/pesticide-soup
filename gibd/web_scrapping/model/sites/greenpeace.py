@@ -1,4 +1,4 @@
-from gibd.web_scrapping.model.site import Site
+from web_scrapping.model.site import Site
 from bs4 import BeautifulSoup,Tag,ResultSet
 
 class Greenpeace(Site):

@@ -1,6 +1,6 @@
-from gibd.web_scrapping.site_managers.base_manager import BaseManager
-from gibd.web_scrapping.model.site import Site
-from gibd.web_scrapping.model.sites.greenpeace import Greenpeace
+from web_scrapping.site_managers.base_manager import BaseManager
+from web_scrapping.model.site import Site
+from web_scrapping.model.sites.greenpeace import Greenpeace
 from bs4 import BeautifulSoup,Tag
 
 

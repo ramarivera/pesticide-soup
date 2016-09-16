@@ -1,4 +1,4 @@
-from gibd.web_scrapping.site_managers.greenpeace_manager import GreenpeaceManager as gm
+from web_scrapping.site_managers.greenpeace_manager import GreenpeaceManager as gm
 
 
 
