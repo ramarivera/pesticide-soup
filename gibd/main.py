@@ -1,7 +1,7 @@
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 import filtros
-import gibd
+
 
 
 fitro = ""
