@@ -13,10 +13,10 @@ def load_object(filename):
         return pickle.load(input2)
 
 def site2notic(algo):
-    notic = Noticia(algo.get_url())
-    notic.fecha = algo.get_date()
-    notic.titulo = algo.get_title()
-    notic.texto = algo.get_content()
+    notic = Noticia(algo._get_url())
+    notic.fecha = algo._get_date()
+    notic.titulo = algo._get_title()
+    notic.texto = algo._get_content()
     return notic
 
 filtro = 'http://www.greenpeace.org/argentina/es/noticias/1-millon-de-firmas-para-causas-ambientales-/'

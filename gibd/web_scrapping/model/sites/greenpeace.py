@@ -1,65 +1,53 @@
 from web_scrapping.model.site import Site
-from bs4 import BeautifulSoup,Tag,ResultSet
+from bs4 import BeautifulSoup, Tag, ResultSet
+
 
 class Greenpeace(Site):
 
     def __init__(self, url, sopa: BeautifulSoup):
-        Site.__init__(self, url)
-        self.__sopa = sopa
-        self.__rset = ""
+        super().__init__(url)
+        self._sopa = sopa
+        self._rset = None
 
-    def get_url(self):
-        return self.url
+    def _get_title(self):
+        self._set_rset()
+        self._title = self._rset.h1.span.text
 
-    def get_title(self):
-        rset = self.__set_rset()
-        if rset and rset[0].h1.span.text:
-            return rset[0].h1.span.text
-        pass
+    def _get_content(self):
+        self._set_rset()
+        paragraphs = self._rset.find_all(self._pltr)
+        self._content = " ".join([tag.text for tag in paragraphs if tag.text and tag.text.strip()])
 
-    def get_content(self):
-        rset = self.__set_rset()
-        if rset:
-            paragraphs = rset[0].find_all(self.__pltr)
-            return " ".join([tag.text for tag in paragraphs if tag.text and tag.text.strip()])
-        pass
+    def _get_date(self):
+        self._set_rset()
+        aux1 = self._rset.find_all(self._dateinfo)
+        aux = aux1[0].text
+        self._date = aux
 
-    def get_date(self):
-        rset = self.__set_rset()
-        if rset:
-            texto = rset[0].find_all(self.__date)
-            return texto[0].text
-        pass
+    def _get_image(self):
+        rset = self._set_rset()
 
-    def get_image(self):
-        rset = self.__set_rset()
-        pass
-
-    def __happen_box(self, tag: Tag) -> bool:
+    def _happen_box(self, tag: Tag) -> bool:
         aux = tag.name == "div" and "happen-box" in tag.get('class', [])
-        if aux:
-            pass
         return aux
 
-    def __text_div(self, tag: Tag) -> bool:
+    def _text_div(self, tag: Tag) -> bool:
         aux = tag.name == "div" and "text" in tag.get('class', [])
         if aux:
             pass
         return aux
 
-    def __set_rset(self) -> ResultSet:
-        if not self.__rset:
-            self.__rset = self.__sopa.find_all(self.__happen_box)
-        return self.__rset
+    def _set_rset(self):
+        if not self._rset:
+            self._rset = self._sopa.find_all(self._happen_box)[0]
 
-    def __pltr(self, tag: Tag) -> bool:
+    def _pltr(self, tag: Tag) -> bool:
         aux = tag.name == "p" and not len(tag.find_all("img"))
-        if aux:
-            pass
         return aux
 
-    def __date(self,tag:Tag) -> bool:
-        aux = tag.name == "span" and "author" in  tag.get("class", "")
+
+    def _dateinfo(self, tag:Tag) -> bool:
+        aux = tag.name == "span" and "author" in tag.get("class", [])
         if aux:
-            pass
+            algo = "hola"
         return aux
