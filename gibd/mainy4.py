@@ -5,7 +5,7 @@ from time import time
 gm = GreenpeaceManager()
 
 t1 = time()
-algo = gm.get_sites(pages = 10)
+algo = gm.get_sites(pages = 20)
 t2 = time()
 
 res = t2 - t1

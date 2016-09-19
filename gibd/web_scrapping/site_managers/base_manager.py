@@ -3,15 +3,18 @@ from urllib.request import Request, urlopen
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 from contextlib import closing
-from selenium.webdriver import PhantomJS  # pip install selenium
+from selenium.webdriver import PhantomJS, Firefox  # pip install selenium
 from web_scrapping.model.site import Site
 from web_scrapping.site_managers.worker import Worker
 from functools import partial
 from queue import Queue
+from web_scrapping.cross_cutting.cc_logging import cclogging
+from web_scrapping.cross_cutting.counter import Counter
 
 class BaseManager(ABC):
 
     _pjs_path = r".\phantomjs\phantomjs.exe"
+    logger = cclogging.getLogger()
 
     def __init__(self, baseurl, index):
         self.baseurl = baseurl
@@ -22,14 +25,23 @@ class BaseManager(ABC):
 
     def _get_sopa(self, url: str, needjs=False) -> BeautifulSoup:
         if not needjs:
+            self.logger.debug("Iniciando urllib")
             req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with closing(urlopen(req)) as webpage:
                 soup = BeautifulSoup(webpage, "html.parser")
+            self.logger.debug("Cerrando urllib")
         else:
-            with closing(PhantomJS(BaseManager._pjs_path)) as pjs:
+            self.logger.debug("Iniciando PJS")
+            try:
+                pjs = PhantomJS(BaseManager._pjs_path)
+                #pjs = Firefox()
                 pjs.get(url)
                 sleep(3)
                 soup = BeautifulSoup(pjs.page_source, "html.parser")
+            finally:
+                self.logger.debug("Cerrando PJS")
+                pjs.close()
+                pjs.quit()
         return soup
 
     @abstractmethod
@@ -42,9 +54,12 @@ class BaseManager(ABC):
         self._input.put(args)
 
     def start_work(self, func):
+        self.logger.debug("Preparando para ejecutar {0}".format(func.__name__))
         wrapper = partial(self._wrapper, func)
-        for i in range(4):
-            worker = Worker(self._input, self._output)
+        counter = Counter()
+        for i in range(8):
+            self.logger.debug("Creando worker {}".format(i+1))
+            worker = Worker(self._input, self._output, counter)
             worker.prepareworker(wrapper)
             worker.start()
             self._workers.append(worker)
@@ -62,7 +77,9 @@ class BaseManager(ABC):
             self._input.put("STOP")
         for w in self._workers:
             #print(dir(w))
+            self.logger.debug("Join en worker {}".format(w.name))
             w.join()
+        self._workers = []
 
     def _wrapper(self, func, *args):
         aux = func(*args)
